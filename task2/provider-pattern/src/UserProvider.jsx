@@ -27,6 +27,7 @@ const userProvider = ({children}) => {
         user,
         permissions,
         theme,
+        setTheme,
         toggleTheme
     } // объект значения формируется, он будет с компонентами
 
