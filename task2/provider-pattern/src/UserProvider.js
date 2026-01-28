@@ -1,7 +1,7 @@
-import React, { Children, useState } from 'react'
+import React, { useState } from 'react'
 import UserContext from './UserContext'
 
-const userProvider = ({Children}) => {
+const userProvider = ({children}) => {
     const [user] = useState({
         name:"Valeria",
         email:"sdfghjk.com",
@@ -32,7 +32,7 @@ const userProvider = ({Children}) => {
 
     return(
         <UserContext.Provider value={value}>
-            {Children}
+            {children}
         </UserContext.Provider> // children оборачивается в провайдер
     )
 }
