@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import UserContext from './UserProvider'
+import UserContext from './UserContext'
 import './App.css'
 
 function App() {

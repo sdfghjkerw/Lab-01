@@ -1,14 +1,40 @@
-import { createContext, useContext } from "react";
+import React, { Children, useState } from 'react'
+import UserContext from './UserContext'
 
-//хук
-const UserContext = createContext(null)
-export const useUser =() => {
-    const context = useContext(UserContext) // достаются данные из контекста
-    if (!context){
-        throw new Error('useUser должен использоваться с userProvider') // ошбка елси хук вызывается без вне провайдера
-    }
-    return context
+const userProvider = ({Children}) => {
+    const [user] = useState({
+        name:"Valeria",
+        email:"sdfghjk.com",
+        role:"Admin"
+    }) // состояние пользователя
+
+    const [permissions] = useState({
+        canEdit:true,
+        canDelete:true,
+        canView:true
+    }) // состояние для прав доступа
+
+    const [theme, setTheme] = useState({
+        darkMode: false,
+        fontSize:'15px'
+    })// сосояние для темы и шрифтов
+
+    const toggleTheme = () => {
+        setTheme(prev => ({...prev, darkMode:!prev.darkMode}))
+    }//функция переключения темы
+
+    const value = {
+        user,
+        permissions,
+        theme,
+        toggleTheme
+    } // объект значения формируется, он будет с компонентами
+
+    return(
+        <UserContext.Provider value={value}>
+            {Children}
+        </UserContext.Provider> // children оборачивается в провайдер
+    )
 }
 
-// createContext - коробка с данными, useContext использует данные из коробки
-export default UserContext
+export default userProvider
