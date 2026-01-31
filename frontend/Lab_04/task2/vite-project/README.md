@@ -1,16 +1,55 @@
-# React + Vite
+# Лабораторная работа 3.2 — React Components and Hooks
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Описание
+В лабораторной работе реализованы три задания, направленные на освоение работы с React Hooks (`useState`, `useEffect`) и компонентной архитектурой.  
+Проект создан с использованием React 18+ и Vite.
 
-Currently, two official plugins are available:
+## Task 1: Basic Data Fetching
+Цель: создать компонент `UserProfile`, который получает данные пользователя с публичного API.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Реализация:
+- Используется `useState` для хранения:
+  - `user` — объект пользователя (или `null`).
+  - `loading` — индикатор загрузки.
+  - `error` — сообщение об ошибке.
+- В `useEffect` выполняется запрос к API:
+  - `https://jsonplaceholder.typicode.com/users/1`
+- Обработка состояний:
+  - "Loading..." при загрузке.
+  - Сообщение об ошибке при сбое.
+  - Данные пользователя при успешной загрузке.
 
-## React Compiler
+## Task 2: Cleanup and Abort
+Цель: добавить очистку и кнопку обновления данных.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Реализация:
+- Используется `AbortController` для отмены запроса при размонтировании компонента.
+- Добавлена кнопка Refresh:
+  - Генерирует случайный `userId` от 1 до 10.
+  - Запускает новый запрос.
+  - Сбрасывает `loading` и `error`.
+- Проверено отсутствие утечек памяти: при размонтировании запросы корректно прерываются.
 
-## Expanding the ESLint configuration
+## Task 3: Dependency Array and Optimization
+Цель: сделать компонент универсальным и управлять им из родителя.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Реализация:
+- В `UserProfile` добавлен проп `userId`.
+- `useEffect` зависит от `userId`.
+  - Комментарий: "userId в массиве зависимостей, чтобы при изменении этого значения запускался новый запрос."
+- Создан родительский компонент `UserApp`:
+  - Управляет состоянием `userId`.
+  - Рендерит `UserProfile` с текущим `userId`.
+  - Добавлены кнопки "User 1", "User 2", "User 3" для переключения пользователей.
+
+## Технические требования
+- React 18+, функциональные компоненты и хуки.
+- Обработка всех состояний: загрузка, ошибка, успех.
+- Правильная очистка запросов через AbortController.
+- Корректное использование массива зависимостей в useEffect.
+- Код без ошибок, с понятными именами и комментариями.
+
+## Запуск проекта
+1. Установить зависимости:
+   ```bash
+   npm install

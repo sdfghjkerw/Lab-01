@@ -10,6 +10,8 @@ function App() {
       <UserProfile/>
       <h2>2 таск 0.2</h2>
       <UserProfile2 />
+      <h2>3 таск 0.2</h2>
+      <UserApp/>
     </>
   )
 }
