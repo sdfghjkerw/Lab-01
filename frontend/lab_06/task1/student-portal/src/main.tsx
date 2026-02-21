@@ -7,6 +7,8 @@ import Home from "./home.tsx"
 import About from './About.tsx'
 import NotFound from './notFound.tsx'
 import Courses from './courses.tsx'
+import { getCourseById } from "./data.tsx"
+import CourseDetail from "./courseDetails.tsx"
 
 
 const router = createBrowserRouter([
@@ -18,6 +20,19 @@ const router = createBrowserRouter([
       {path: "courses", element: <Courses />},
       {path: "about", element: <About />},
       {path: "*", element: <NotFound />},
+      {
+        path: "courses/:id",
+        element: <CourseDetail/>,
+        errorElement: <p>course not found</p>,
+        loader: async ({params}) => {
+          const course = getCourseById(Number(params.id))
+          if(!course){
+            throw new Error("Course not found")
+          }
+
+          return {course}
+        },
+      }
     ],
   },
 ])
