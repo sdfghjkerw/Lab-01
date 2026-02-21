@@ -1,0 +1,30 @@
+.nav {
+    display: flex;
+    gap: 20px;
+    padding: 15px;
+    background: wheat;
+}
+
+.nav a{
+    color: white;
+    text-decoration: none;
+}
+
+.nav a:hover{
+    text-decoration: underline;
+}
+
+.main{
+    padding: 30px;
+}
+
+.footer{
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+    background: bisque;
+}
+
+a {
+    margin: 20px;
+}
