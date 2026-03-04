@@ -1,0 +1,13 @@
+const config = {}
+
+export default {
+    get(key){
+        return congif[key] 
+    },
+    set(key, value){
+        cong=fig[key] = value
+    },
+    getAll(){
+        return {...config}
+    }
+}
