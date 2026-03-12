@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Home Demo</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .controls { background: #eee; padding: 20px; border-radius: 10px; }
+        button { padding: 10px; margin: 5px; cursor: pointer; }
+        #log { background: #000; color: #0f0; padding: 10px; height: 200px; overflow-y: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <h2>Smart Home Panel</h2>
+        <button id="btn-on">Turn Light ON</button>
+        <button id="btn-undo" style="background: #ffcc00;">Undo (Отмена)</button>
+        <hr>
+        <button id="btn-alarm" style="background: red; color: white;">🚨 TRIGGER ALARM</button>
+    </div>
+    <div id="log"></div>
+
+    <script type="module">
+        import { HomeMediator } from './mediator/HomeMediator.jsx';
+        import { Light } from './devices/Light.jsx';
+        import { LightOnCommand } from './commands/lightCommands.jsx';
+        import { CommandManager } from './commands/commandManager.jsx';
+
+        const logDiv = document.getElementById('log');
+        const originalLog = console.log;
+        console.log = (msg) => {
+            originalLog(msg);
+            logDiv.innerHTML += `<div>${msg}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        };
+
+        const mediator = new HomeMediator();
+        const manager = new CommandManager();
+        const light = new Light('LivingRoomLight', mediator);
+        
+        mediator.registerDevice('LivingRoomLight', light);
+
+        document.getElementById('btn-on').onclick = () => {
+            manager.execute(new LightOnCommand(light));
+        };
+
+        document.getElementById('btn-undo').onclick = () => {
+            manager.undo();
+        };
+
+        document.getElementById('btn-alarm').onclick = () => {
+            mediator.notify({name: 'Security'}, 'alarm');
+        };
+    </script>
+</body>
+</html>
