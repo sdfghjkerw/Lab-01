@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="panel publisher-site">
+        <h2>опубликовать новость</h2>
+        <label>заголовок</label>
+        <input type="text" id="headline" placeholder="введите заголовок">
+
+        <label>категория</label>
+        <select id="category">
+            <option value="tech">технология</option>
+            <option value="sport">спорт</option>
+            <option value="business">бизнес</option>
+        </select>
+        <label>приоритет:</label>
+        <select id="priority">
+            <option value="normal">обычный</option>
+            <option value="urgent">СРОЧНЫЙ!</option>
+        </select>
+
+        <label>содержание</label>
+        <textarea id="content" rows="4"></textarea>
+        <button id="publish-btn">опубликовать</button>
+    </div>
+    <div class="panel subscribers-site">
+        <div>
+            <h2>Dashboard Widget</h2>
+            <div id="widget-container">
+                </div>
+        </div>
+        <div>
+            <h2>Системный лог</h2>
+            <p><small>Откройте консоль браузера, чтобы увидеть логи Email и Push уведомлений.</small></p>
+            <div id="log-summary"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { NewsPublisher } from './publisher/NewsPublisher.js';
+        import { EmailNotifier } from './subscribers/EmailNotifier.js';
+        import { PushNotifier } from './subscribers/PushNotifier.js';
+        import { DashboardWidget } from './subscribers/DashboardWidget.js';
+
+        const bbc = new NewsPublisher("BBC News")
+        const emailSub = new EmailNotifier("user@example.com")
+        const pushSub = new PushNotifier("smartphone001")
+        const widgetSub = new DashboardWidget("widget-container")
+
+        emailSub.subscribe(['all'])
+        pushSub.subscribe(['tech'])
+        widgetSub.subscribe(['all'])
+
+        document.getElementById('publish-btn').addEventListener('click', () => {
+            const headline = document.getElementById('headline').value
+            const category = document.getElementById('category').value
+            const priority = document.getElementById('priority').value
+            const content = document.getElementById('content').value
+
+            if (!headline || !content) return alert("Заполните все поля!")
+
+            bbc.publishArticle(category, headline, content, priority)
+            
+            document.getElementById('headline').value = ''
+            document.getElementById('content').value = ''
+        });
+    </script>
+</body>
+</html>
