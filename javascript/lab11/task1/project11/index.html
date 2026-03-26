@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab 11.1 Demo</title>
+</head>
+<body>
+  <h1>Lab 11.1 Demo</h1>
+  <button id="fetchBtn">Fetch Data</button>
+  <button id="retryBtn">Fetch with Retry</button>
+  <button id="queueBtn">Run Queue</button>
+
+  <pre id="output"></pre>
+
+  <script type="module">
+    import PromiseHttpClient from './async/PromiseHttpClient.js'
+    import { withRetry } from './async/retry.js'
+    import { AsyncQueue } from './async/AsyncQueue.js'
+
+    const output = document.getElementById('output')
+    const client = new PromiseHttpClient('https://jsonplaceholder.typicode.com')
+
+    function log(data) {
+      output.textContent += JSON.stringify(data, null, 2) + '\n\n'
+    }
+
+    document.getElementById('fetchBtn').onclick = async () => {
+      output.textContent = ''
+      try {
+        const data = await client.get('/posts/1')
+        log(data)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+
+    document.getElementById('retryBtn').onclick = async () => {
+      output.textContent = ''
+      try {
+        const result = await withRetry(
+          () => client.get('/invalid-url'),
+          { maxAttempts: 3 }
+        )
+        log(result)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+
+    document.getElementById('queueBtn').onclick = async () => {
+      output.textContent = ''
+      const queue = new AsyncQueue(2)
+
+      const tasks = Array.from({ length: 5 }).map((_, i) => () =>
+        client.get(`/posts/${i + 1}`)
+      )
+
+      try {
+        const results = await queue.addAll(tasks)
+        log(results)
+        log(queue.getStats())
+      } catch (e) {
+        log(e.message)
+      }
+    }
+  </script>
+</body>
+</html>

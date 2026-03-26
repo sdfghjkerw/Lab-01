@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab 11.2 Demo</title>
+</head>
+<body>
+  <h1>Lab 11.2 Demo</h1>
+
+  <button id="parallelBtn">Parallel Fetch</button>
+  <button id="multiBtn">Multiple Users</button>
+  <button id="pipelineBtn">Run Pipeline</button>
+  <button id="cancelBtn">Cancel Request</button>
+
+  <pre id="output"></pre>
+
+  <script type="module">
+    import PromiseHttpClient from './async/PromiseHttpClient.js'
+    import { DataFetcher } from './async/DataFetcher.js'
+    import { AsyncPipeline } from './async/Pipeline.js'
+    import { CancellableFetcher } from './async/CancellableFetcher.js'
+
+    const output = document.getElementById('output')
+
+    const client = new PromiseHttpClient('https://jsonplaceholder.typicode.com')
+    const fetcher = new DataFetcher(client)
+    const cancellable = new CancellableFetcher()
+
+    function log(data) {
+      output.textContent += JSON.stringify(data, null, 2) + '\n\n'
+    }
+
+    document.getElementById('parallelBtn').onclick = async () => {
+      output.textContent = ''
+      try {
+        const data = await fetcher.fetchUserWithDetails(1)
+        log(data)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+
+    document.getElementById('multiBtn').onclick = async () => {
+      output.textContent = ''
+      try {
+        const data = await fetcher.fetchMultipleUsers([1, 2, 999])
+        log(data)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+
+    document.getElementById('pipelineBtn').onclick = async () => {
+      output.textContent = ''
+
+      const pipeline = new AsyncPipeline()
+        .use(async data => data + 1)
+        .use(async data => data * 2)
+        .use(async data => ({ result: data }))
+
+      try {
+        const result = await pipeline.execute(5)
+        log(result)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+
+    document.getElementById('cancelBtn').onclick = async () => {
+      output.textContent = ''
+
+      const id = 'req1'
+
+      const request = cancellable.fetch(
+        'https://jsonplaceholder.typicode.com/posts',
+        { id }
+      )
+
+      setTimeout(() => {
+        cancellable.cancel(id)
+      }, 100)
+
+      try {
+        const res = await request
+        const data = await res.json()
+        log(data)
+      } catch (e) {
+        log(e.message)
+      }
+    }
+  </script>
+</body>
+</html>
