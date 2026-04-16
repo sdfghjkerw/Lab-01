@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>MyApp Namespace Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .block {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        pre {
+            background: #111;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 6px;
+            overflow: auto;
+        }
+
+        button {
+            padding: 6px 10px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>MyApp Namespace Demo</h1>
+
+<div class="block">
+    <h2>Core</h2>
+    <div id="core"></div>
+</div>
+
+<div class="block">
+    <h2>Utils</h2>
+    <div id="utils"></div>
+</div>
+
+<div class="block">
+    <h2>Storage Plugin</h2>
+    <button onclick="testStorage()">Test LocalStorage</button>
+    <pre id="storage"></pre>
+</div>
+
+<div class="block">
+    <h2>Validation Plugin</h2>
+    <button onclick="testValidation()">Test Validation</button>
+    <pre id="validation"></pre>
+</div>
+
+<div class="block">
+    <h2>Router Plugin</h2>
+    <button onclick="testRouter()">Test Router</button>
+    <pre id="router"></pre>
+</div>
+
+<!-- ===================== -->
+<!-- YOUR LIBRARY FILES -->
+<!-- ===================== -->
+
+<script src="namespace/core.js"></script>
+<script src="namespace/utils.js"></script>
+<script src="namespace/plugins.js"></script>
+
+<script>
+    // =====================
+    // CORE DEMO
+    // =====================
+    document.getElementById('core').innerHTML =
+        JSON.stringify(MyApp.core, null, 2);
+
+    // =====================
+    // UTILS DEMO
+    // =====================
+    const arr = [1, 2, 2, 3, null, 4];
+
+    const utilsOutput = {
+        array: {
+            unique: MyApp.utils.array.unique(arr),
+            compact: MyApp.utils.array.compact(arr),
+            chunk: MyApp.utils.array.chunk(arr, 2),
+        },
+        string: {
+            capitalize: MyApp.utils.string.capitalize("hello"),
+            titleize: MyApp.utils.string.titleize("hello world"),
+            slugify: MyApp.utils.string.slugify("Hello World!! JS"),
+        },
+        date: {
+            isToday: MyApp.utils.date.isToday(new Date()),
+            format: MyApp.utils.date.format(new Date(), "YYYY-MM-DD HH:mm"),
+        },
+        number: {
+            random: MyApp.utils.number.random(1, 10),
+            format: MyApp.utils.number.format(1234567)
+        }
+    };
+
+    document.getElementById('utils').innerHTML =
+        JSON.stringify(utilsOutput, null, 2);
+
+    // =====================
+    // STORAGE TEST
+    // =====================
+    function testStorage() {
+        MyApp.plugins.storage.local.set("user", {
+            name: "Valeria",
+            role: "student"
+        });
+
+        const data = MyApp.plugins.storage.local.get("user");
+
+        document.getElementById("storage").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+    // =====================
+    // VALIDATION TEST
+    // =====================
+    function testValidation() {
+        const data = {
+            email: "test@email.com",
+            username: "a"
+        };
+
+        const rules = {
+            email: {
+                required: true,
+                pattern: MyApp.plugins.validation.rules.email
+            },
+            username: {
+                required: true,
+                minLength: 3
+            }
+        };
+
+        const result = MyApp.plugins.validation.validate(data, rules);
+
+        document.getElementById("validation").textContent =
+            JSON.stringify(result, null, 2);
+    }
+
+    // =====================
+    // ROUTER TEST
+    // =====================
+    function testRouter() {
+        const router = MyApp.plugins.router;
+
+        router.addRoute("/user/:id", function (params) {
+            console.log("User route:", params);
+        });
+
+        router.addRoute("/post/:postId", function (params) {
+            console.log("Post route:", params);
+        });
+
+        router.navigate("/user/42");
+
+        document.getElementById("router").textContent =
+            "Navigate to /user/42 → check console (F12)";
+    }
+</script>
+
+</body>
+</html>
