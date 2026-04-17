@@ -1,13 +1,20 @@
 import { useState, useMemo, useCallback } from "react";
 import { FixedSizeList as List } from "react-window";
-import { generateItems } from "../utils/generateItems";
+import { generateItems, Item } from "../utils/generateItems";
 
-export function VirtualList() {
+interface VirtualListProps {
+  itemCount?: number;
+  height?: number;
+}
+
+export function VirtualList({ itemCount = 10000, height = 500 }: VirtualListProps) {
   const [filter, setFilter] = useState("");
-  const items = useMemo(() => generateItems(10000), []);
+  
+  const items = useMemo(() => generateItems(itemCount), [itemCount]);
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => 
+    if (!filter) return items;
+    return items.filter(item =>
       item.title.toLowerCase().includes(filter.toLowerCase()) ||
       item.category.toLowerCase().includes(filter.toLowerCase())
     );
@@ -15,31 +22,34 @@ export function VirtualList() {
 
   const handleFilterChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter(e.target.value);
-  }, []);
+  }, []); 
 
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const item = filteredItems[index];
     return (
-      <div style={style} className="list-item">
+      <div style={style} className="list-item" style={{ ...style, borderBottom: '1px solid #eee' }}>
         <h4>{item.title}</h4>
         <p>{item.description}</p>
-        <small>{item.category}</small>
+        <span className="category" style={{ color: 'blue' }}>{item.category}</span>
       </div>
     );
   };
 
   return (
-    <div>
-      <input 
-        type="text" 
-        placeholder="Filter items..." 
-        value={filter} 
-        onChange={handleFilterChange} 
+    <div className="virtual-list-container">
+      <input
+        type="text"
+        placeholder="Filter items..."
+        value={filter}
+        onChange={handleFilterChange}
+        className="filter-input"
       />
-      <p>Showing {filteredItems.length} items</p>
+      <div className="list-info">
+        Showing {filteredItems.length} of {items.length} items
+      </div>
       
       <List
-        height={500}
+        height={height}
         itemCount={filteredItems.length}
         itemSize={80} 
         width="100%"
